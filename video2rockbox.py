@@ -12,7 +12,7 @@ video_res = ()
 def GetResolution(infile):
   com = 'ffmpeg -i "%s" 2>&1 | grep "Video:" | grep -Eo "[0-9]{2,4}x[0-9]{2,4}"' % infile
   raw = Popen(com, shell=True, stdin=PIPE, stdout=PIPE).stdout.read()
-  out = str(raw).replace('\\n\'', '').replace('b\'', '').split('x')
+  out = str(raw)[2:-3].split('x')
   return (int(out[0]), int(out[1]))
 
 def ShowModels():
