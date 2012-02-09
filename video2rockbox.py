@@ -15,13 +15,23 @@ def GetResolution(infile):
   out = str(raw).replace('\\n\'', '').replace('b\'', '').split('x')
   return (int(out[0]), int(out[1]))
 
+def ShowModels():
+  stdout = ''
+  for manufacturer in models:
+    if models[manufacturer]:
+      stdout += '%s:\n' % manufacturer
+      for model in models[manufacturer]:
+        stdout += '\t%i: %s\n' % (model, models[manufacturer][model][1])
+      stdout += '\n'
+  return stdout
+
 parser = OptionParser()
-parser.add_option('-m', '--model', dest='model', help='Player model. For list all suported models: --models-list or -l.', metavar='<int>')
+parser.add_option('-m', '--model', dest='model', help='Player model number. For list all suported models: --models-list or -l.', metavar='<int>')
 parser.add_option('-i', '--input-file', dest='input_file', help='Path to input file.', metavar='<str>')
 parser.add_option('-o', '--output-file', dest='output_file', help='Path to output file.', metavar='<str>')
 parser.add_option('-v', '--video-rate', dest='v_rate', help='Video bitrate.', metavar='<int>')
 parser.add_option('-a', '--audio-rate', dest='a_rate', help='Audio bitrate.', metavar='<int>')
-parser.add_option('-l', '--models-list', help='Audio bitrate.')
+parser.add_option('-l', '--models-list', dest='models_list', action='store_true', help='Show all models.', default=False)
 
 options, args = parser.parse_args()
 
@@ -30,7 +40,7 @@ try:
 except:
   model = 0
 try:
-  input_file = str(options.input_file)
+  input_file = options.input_file
 except:
   input_file = False
 try:
@@ -46,6 +56,11 @@ try:
 except:
   audio_rate = 128
 
+if options.models_list:
+  print(ShowModels())
+
+if not input_file or input_file == None:
+  exit()
 
 for manufacturer in models:
   if models[manufacturer].get(model):
