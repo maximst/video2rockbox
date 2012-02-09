@@ -25,6 +25,12 @@ def ShowModels():
       stdout += '\n'
   return stdout
 
+def OutFileName(infile):
+  infile_list = infile.split('.')
+  infile_list[-1] = 'mpeg'
+  outfile = '.'.join(infile_list)
+  return outfile
+
 parser = OptionParser()
 parser.add_option('-m', '--model', dest='model', help='Player model number. For list all suported models: --models-list or -l.', metavar='<int>')
 parser.add_option('-i', '--input-file', dest='input_file', help='Path to input file.', metavar='<str>')
@@ -35,32 +41,29 @@ parser.add_option('-l', '--models-list', dest='models_list', action='store_true'
 
 options, args = parser.parse_args()
 
-try:
-  model = int(options.model)
-except:
-  model = 0
-try:
-  input_file = options.input_file
-except:
-  input_file = False
-try:
+if options.models_list:
+  print(ShowModels())
+
+if options.input_file == None or options.model == None:
+  exit()
+
+model = int(options.model)
+input_file = str(options.input_file)
+
+if options.output_file == None:
+  output_file = OutFileName(input_file)
+else:
   output_file = str(options.output_file)
-except:
-  output_file = '%s.mpeg' % input_file
+
 try:
   video_rate = int(options.v_rate)
 except:
   video_rate = 400
+
 try:
   audio_rate = int(options.a_rate)
 except:
   audio_rate = 128
-
-if options.models_list:
-  print(ShowModels())
-
-if not input_file or input_file == None:
-  exit()
 
 for manufacturer in models:
   if models[manufacturer].get(model):
