@@ -84,7 +84,6 @@ elif video_ar > player_ar:
 else:
   resolution = '%ix%i' % (int(resolutions[full_model_info[0]][1] * video_ar), resolutions[full_model_info[0]][1])
 
-
 #Convert video
 system('ffmpeg -i "%s" -vcodec mpeg2video -b 100k -an -s %s -r 23 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -pass 1 "%s"' % (input_file, resolution, output_file))
 
