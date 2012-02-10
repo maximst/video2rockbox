@@ -31,6 +31,19 @@ def OutFileName(infile):
   outfile = '.'.join(infile_list)
   return outfile
 
+def SetResolution(res, fmi):
+  if res:
+    ar = res[0] / res[1]
+    player_ar = resolutions[fmi[0]][0] / resolutions[fmi[0]][1]
+
+  if ar == player_ar:
+    resolution = '%ix%i' % resolutions[fmi[0]]
+  elif ar > player_ar:
+    resolution = '%ix%i' % (resolutions[fmi[0]][0], int(resolutions[fmi[0]][0] / ar))
+  else:
+    resolution = '%ix%i' % (int(resolutions[fmi[0]][1] * ar), resolutions[fmi[0]][1])
+  return resolution
+
 parser = OptionParser()
 parser.add_option('-m', '--model', dest='model', help='Player model number. For list all suported models: --models-list or -l.', metavar='<int>')
 parser.add_option('-i', '--input-file', dest='input_file', help='Path to input file.', metavar='<str>')
@@ -72,17 +85,7 @@ for manufacturer in models:
 
 #Get video resolution and calculate resolution of out file
 video_res = GetResolution(input_file)
-
-if video_res:
-  video_ar = video_res[0] / video_res[1]
-  player_ar = resolutions[full_model_info[0]][0] / resolutions[full_model_info[0]][1]
-
-if video_ar == player_ar:
-  resolution = '%ix%i' % resolutions[full_model_info[0]]
-elif video_ar > player_ar:
-  resolution = '%ix%i' % (resolutions[full_model_info[0]][0], int(resolutions[full_model_info[0]][0] / video_ar))
-else:
-  resolution = '%ix%i' % (int(resolutions[full_model_info[0]][1] * video_ar), resolutions[full_model_info[0]][1])
+resolution = SetResolution(video_res, full_model_info)
 
 #Convert video
 system('ffmpeg -i "%s" -vcodec mpeg2video -b 100k -an -s %s -r 23 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -pass 1 "%s"' % (input_file, resolution, output_file))
