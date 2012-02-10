@@ -22,9 +22,9 @@ class Video:
 
   def ModelInfo():
     for manufacturer in models:
-      if models[manufacturer].get(self.model):
-	self.model_info = models[manufacturer][self.model]
-	break
+    if models[manufacturer].get(self.model):
+      self.model_info = models[manufacturer][self.model]
+      break
 
   def GetResolution():
     com = 'ffmpeg -i "%s" 2>&1 | grep "Video:" | grep -Eo "[0-9]{2,4}x[0-9]{2,4}"' % self.input_file
