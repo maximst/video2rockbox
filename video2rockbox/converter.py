@@ -51,6 +51,7 @@ class Video:
       self.output_resolution = (int(resolutions[self.model_info[0]][1] * video_ar), resolutions[self.model_info[0]][1])
 
   def Convert(self, two_pass=True):
+    pass2 = ''
     if two_pass:
       pass2 = '-pass 2'
       values_pass1 = (
