@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
-from config import *
+from video2rockbox.config import *
 from os import popen, system
 
 full_model_info = ()
@@ -9,7 +9,7 @@ video_res = ()
 
 class Video:
   def __init__(self, model, input_file,
-                output_file=False, video_rate=False, audio_rate=False):
+                output_file=None, video_rate=None, audio_rate=None):
     self.model = model
     self.input_file = input_file
     self.ModelInfo()
