@@ -6,7 +6,7 @@ from optparse import OptionParser
 from video2rockbox.converter import Video
 
 
-def ShowModels():
+def show_models():
   stdout = ''
   for manufacturer in models:
     if models[manufacturer]:
@@ -27,7 +27,7 @@ parser.add_option('-l', '--models-list', dest='models_list', action='store_true'
 options, args = parser.parse_args()
 
 if options.models_list:
-  print(ShowModels())
+  print(show_models())
 
 if options.input_file == None or options.model == None:
   exit()
@@ -48,4 +48,4 @@ except:
 
 converter = Video(model, input_file, output_file=output_file, video_rate=video_rate, audio_rate=audio_rate)
 
-converter.Convert()
+converter.convert()

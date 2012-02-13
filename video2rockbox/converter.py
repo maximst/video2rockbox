@@ -4,53 +4,60 @@
 from video2rockbox.config import *
 from os import popen, system
 
-full_model_info = ()
-video_res = ()
+def get_model_info(model):
+  for manufacturer in models:
+    if models[manufacturer].get(model):
+      return models[manufacturer][model]
+      break
+
+def video_resolution(input_file):
+  com = 'ffmpeg -i "%s" 2>&1 | grep "Video:" | grep -Eo "[0-9]{2,4}x[0-9]{2,4}"' % input_file
+  raw = popen(com).read()
+  out = raw.split('\n')[0].split('x')
+  return (int(out[0]), int(out[1]))
+
+
 
 class Video:
   def __init__(self, model, input_file,
-                output_file=None, video_rate=None, audio_rate=None):
+                output_file=False, video_rate=False, audio_rate=False):
+
     self.model = model
     self.input_file = input_file
-    self.ModelInfo()
-    self.GetResolution()
-    if output_file:
-      self.output_file = output_file
-    else:
-      self.OutFileName()
-    self.SetResolution()
+    self.model_info = self.get_full_info()
+    self.input_resolution = self.get_video_resolution()
+    self.output_resolution = self.out_resolution()
     self.video_rate = 400
     self.audio_rate = 128
 
-  def ModelInfo(self):
-    for manufacturer in models:
-      if models[manufacturer].get(self.model):
-        self.model_info = models[manufacturer][self.model]
-        break
+    if output_file:
+      self.output_file = output_file
+    else:
+      self.out_file_name()
 
-  def GetResolution(self):
-    com = 'ffmpeg -i "%s" 2>&1 | grep "Video:" | grep -Eo "[0-9]{2,4}x[0-9]{2,4}"' % self.input_file
-    raw = popen(com).read()
-    out = raw.split('\n')[0].split('x')
-    self.input_resolution = (int(out[0]), int(out[1]))
 
-  def OutFileName(self):
+  def get_full_info(self):
+    return get_model_info(self.model)
+  def get_video_resolution(self):
+    return video_resolution(self.input_file)
+
+  def out_file_name(self):
     infile_list = self.input_file.split('.')
     infile_list[-1] = 'mpeg'
     self.output_file = '.'.join(infile_list)
 
-  def SetResolution(self):
-    video_ar = self.input_resolution[0] / self.input_resolution[1]
-    player_ar = resolutions[self.model_info[0]][0] / resolutions[self.model_info[0]][1]
+  def out_resolution(self):
+    video_ar = float(self.input_resolution[0]) / float(self.input_resolution[1])
+    player_ar = float(resolutions[self.model_info[0]][0]) / float(resolutions[self.model_info[0]][1])
 
     if video_ar == player_ar:
-      self.output_resolution = resolutions[self.model_info[0]]
+      return resolutions[self.model_info[0]]
     elif video_ar > player_ar:
-      self.output_resolution = (resolutions[self.model_info[0]][0], int(resolutions[self.model_info[0]][0] / video_ar))
+      return (resolutions[self.model_info[0]][0], int(resolutions[self.model_info[0]][0] / video_ar))
     else:
-      self.output_resolution = (int(resolutions[self.model_info[0]][1] * video_ar), resolutions[self.model_info[0]][1])
+      return (int(resolutions[self.model_info[0]][1] * video_ar), resolutions[self.model_info[0]][1])
 
-  def Convert(self, two_pass=True):
+  def convert(self, two_pass=True):
     pass2 = ''
     if two_pass:
       pass2 = '-pass 2'
